@@ -31,6 +31,8 @@ defmodule LiveViewStudioWeb.LightLive do
       <button phx-click="on">
         <img src="images/light-on.svg">
       </button>
+
+      <button phx-click="light-me-up">Light me up</button>
     </div>
     """
   end
@@ -55,6 +57,12 @@ defmodule LiveViewStudioWeb.LightLive do
 
   def handle_event("down", _, socket) do
     socket = update(socket, :brightness, &(&1 - 10))
+
+    {:noreply, socket}
+  end
+
+  def handle_event("light-me-up", _, socket) do
+    socket = assign(socket, :brightness, Enum.random(0..100))
 
     {:noreply, socket}
   end
