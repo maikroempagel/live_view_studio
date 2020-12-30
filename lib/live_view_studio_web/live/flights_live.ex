@@ -1,13 +1,16 @@
 defmodule LiveViewStudioWeb.FlightsLive do
   use LiveViewStudioWeb, :live_view
 
+  alias LiveViewStudio.Airports
   alias LiveViewStudio.Flights
 
   def mount(_params, _session, socket) do
     socket =
       assign(socket,
+        airport: "",
         flight_number: "",
         flights: [],
+        matches: [],
         loading: false
       )
 
@@ -34,7 +37,25 @@ defmodule LiveViewStudioWeb.FlightsLive do
             <img src="images/search.svg">
           </button>
         </form>
+        <form phx-submit="search-flights-by-airport" phx-change="suggest-airport">
+          <input type="text" name="airport" value="<%= @airport %>"
+            placeholder="Airport"
+            autocomplete="off"
+            list="matches"
+            phx-debounce="1000"
+            <%= if @loading, do: "readonly" %>
+          />
+          <button>
+            <img src="images/search.svg">
+          </button>
+        </form>
       </div>
+
+      <datalist id="matches">
+        <%= for match <- @matches do %>
+          <option value="<%= match %>"><%= match %></option>
+        <% end %>
+      </datalist>
 
       <div class="flights">
         <ul>
@@ -78,12 +99,47 @@ defmodule LiveViewStudioWeb.FlightsLive do
     {:noreply, socket}
   end
 
+  def handle_event("search-flights-by-airport", %{"airport" => airport}, socket) do
+    send(self(), {:search_by_airport, airport})
+
+    socket =
+      assign(socket,
+        airport: airport,
+        loading: true
+      )
+
+    {:noreply, socket}
+  end
+
+  def handle_event("suggest-airport", %{"airport" => prefix}, socket) do
+    socket = assign(socket, matches: Airports.suggest(prefix))
+
+    {:noreply, socket}
+  end
+
   def handle_info({:search, flight_number}, socket) do
     socket =
       case Flights.search_by_number(flight_number) do
         [] ->
           socket
           |> put_flash(:info, "No flights found for number \"#{flight_number}\"")
+          |> assign(flights: [], loading: false)
+
+        flights ->
+          socket
+          |> clear_flash()
+          |> assign(flights: flights, loading: false)
+      end
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:search_by_airport, airport}, socket) do
+    socket =
+      case Flights.search_by_airport(airport) do
+        [] ->
+          socket
+          |> put_flash(:info, "No flights found for airport \"#{airport}\"")
           |> assign(flights: [], loading: false)
 
         flights ->
