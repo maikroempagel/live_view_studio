@@ -36,4 +36,16 @@ defmodule LiveViewStudioWeb.PageLive do
         into: %{},
         do: {app, vsn}
   end
+
+  defp lessons() do
+    %{
+      "Button Clicks" => LiveViewStudioWeb.LightLive,
+      "Dynamic Form" => LiveViewStudioWeb.LicenseLive,
+      "Dashboard" => LiveViewStudioWeb.SalesDashboardLive,
+      "Live Search" => LiveViewStudioWeb.SearchLive,
+      "Autocomplete" => LiveViewStudioWeb.AutocompleteLive,
+      "Filtering" => LiveViewStudioWeb.FilterLive,
+      "Live Navigation" => LiveViewStudioWeb.ServersLive
+    }
+  end
 end

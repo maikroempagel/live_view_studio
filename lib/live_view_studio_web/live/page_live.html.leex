@@ -15,6 +15,19 @@
 
 <section class="row">
   <article class="column">
+    <h2>Table of Contents</h2>
+    <ul>
+      <% lessons = lessons() %>
+      <%= for lesson_key <- Map.keys(lessons) do %>
+        <li>
+          <%= live_redirect lesson_key,
+                to: Routes.live_path(@socket, Map.get(lessons, lesson_key))
+          %>
+        </li>
+      <% end %>
+    </ul>
+  </article>
+  <article class="column">
     <h2>Resources</h2>
     <ul>
       <li>
