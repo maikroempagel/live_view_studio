@@ -128,7 +128,7 @@ defmodule LiveViewStudioWeb.AutocompleteLive do
   end
 
   def handle_info({:run_zip_search, zip}, socket) do
-    case Stores.search_by_zip(zip) do
+    case Stores.list_stores(zip: zip) do
       [] ->
         socket =
           socket
@@ -144,7 +144,7 @@ defmodule LiveViewStudioWeb.AutocompleteLive do
   end
 
   def handle_info({:run_city_search, city}, socket) do
-    case Stores.search_by_city(city) do
+    case Stores.list_stores(city: city) do
       [] ->
         socket =
           socket

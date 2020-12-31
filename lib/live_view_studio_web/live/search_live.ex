@@ -84,7 +84,7 @@ defmodule LiveViewStudioWeb.SearchLive do
   end
 
   def handle_info({:run_zip_search, zip}, socket) do
-    case Stores.search_by_zip(zip) do
+    case Stores.list_stores(zip: zip) do
       [] ->
         socket =
           socket
